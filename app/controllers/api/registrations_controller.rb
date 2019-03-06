@@ -29,7 +29,7 @@ class Api::RegistrationsController < ApplicationController
     @user = User.create(user_params)
     if @user.persisted?
       jwt = Knock::AuthToken.new(payload: { sub: @user.id }).token
-      render json: { token: token, expire: DateTime.now + Knock.token_lifetime, user: @user }, status: :created
+      render json: { token: token, expire: DateTime.now + Knock.token_lifetime, user: ::UserRepresenter.new(@user) }, status: :created
     else
       render json: { errors: @user.errors }, status: :unprocessable_entity
     end

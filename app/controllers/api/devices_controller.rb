@@ -14,7 +14,7 @@ class Api::DevicesController < ApplicationController
   EOS
   def index
     @devices = current_user&.devices
-    render json: @devices, status: :ok
+    render json: ::DeviceRepresenter.for_collection.new(@devices), status: :ok
   end
 
   api :POST, '/v1/devices', 'Create device'
@@ -34,7 +34,6 @@ class Api::DevicesController < ApplicationController
   {
     "device": {
       "id": 1,
-      "user_id": 5,
       "name": "test device",
       "identity": "5bVondZsV9fwCPjoZcg2KmEq",
       "timezone": "Europe/Moscow"
@@ -44,7 +43,7 @@ class Api::DevicesController < ApplicationController
   def create
     @device = current_user.devices.new(device_params)
     if @device.save
-      render json: { device: @device }, status: :created
+      render json: { device: ::DeviceRepresenter.new(@device) }, status: :created
     else
       render json: { errors: @device.errors }, status: :unprocessable_entity
     end
@@ -67,7 +66,6 @@ class Api::DevicesController < ApplicationController
   {
     "device": {
       "id": 1,
-      "user_id": 5,
       "name": "test device",
       "identity": "5bVondZsV9fwCPjoZcg2KmEq",
       "timezone": "Europe/Moscow"
@@ -77,7 +75,7 @@ class Api::DevicesController < ApplicationController
   def update
     @device = current_user.devices.find(params[:id])
     if @device.update(device_params)
-      render json: { device: @device }, status: :ok
+      render json: { device: ::DeviceRepresenter.new(@device) }, status: :ok
     else
       render json: { errors: @device.errors }, status: :unprocessable_entity
     end
@@ -91,7 +89,6 @@ class Api::DevicesController < ApplicationController
   {
     "device": {
       "id": 1,
-      "user_id": 5,
       "name": "test device",
       "identity": "5bVondZsV9fwCPjoZcg2KmEq",
       "timezone": "Europe/Moscow"
@@ -100,7 +97,7 @@ class Api::DevicesController < ApplicationController
   EOS
   def show
     @device = current_user.devices.find(params[:id])
-    render json: { device: @device }, status: :ok
+    render json: { device: ::DeviceRepresenter.new(@device).to_hash(user_options: { with_children: true }) }, status: :ok
   end
 
   private

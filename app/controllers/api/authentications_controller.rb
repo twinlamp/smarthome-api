@@ -28,7 +28,7 @@ class Api::AuthenticationsController < ApplicationController
     @user = User.find_by(email: auth_params[:email])
     if @user&.authenticate(auth_params[:password])
       jwt = Knock::AuthToken.new(payload: { sub: @user.id }).token
-      render json: { token: jwt, expire: DateTime.now + Knock.token_lifetime, user: @user }, status: :created
+      render json: { token: jwt, expire: DateTime.now + Knock.token_lifetime, user: ::UserRepresenter.new(@user) }, status: :created
     else
       render json: { errors: { email: 'Wrong email or password' } }, status: :unprocessable_entity
     end

@@ -6,6 +6,7 @@ ruby '2.6.1'
 gem 'apipie-rails'
 gem 'bootsnap', '>= 1.1.0', require: false
 gem 'knock'
+gem 'multi_json'
 gem 'pg', '>= 0.18', '< 2.0'
 gem 'puma', '~> 3.11'
 gem 'rails', '~> 5.2.2'

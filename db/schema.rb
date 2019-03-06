@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_03_06_113846) do
+ActiveRecord::Schema.define(version: 2019_03_06_123028) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,10 +23,23 @@ ActiveRecord::Schema.define(version: 2019_03_06_113846) do
     t.index ["user_id"], name: "index_devices_on_user_id"
   end
 
+  create_table "sensors", force: :cascade do |t|
+    t.bigint "device_id"
+    t.string "icon"
+    t.string "name"
+    t.integer "order"
+    t.decimal "value", precision: 10, scale: 2
+    t.string "conf_name"
+    t.decimal "min", precision: 10, scale: 2
+    t.decimal "max", precision: 10, scale: 2
+    t.index ["device_id"], name: "index_sensors_on_device_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email"
     t.string "password_digest"
   end
 
   add_foreign_key "devices", "users"
+  add_foreign_key "sensors", "devices"
 end

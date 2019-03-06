@@ -1,5 +1,6 @@
 class Device < ApplicationRecord
   belongs_to :user
+  has_many :sensors
 
   before_validation :set_identity, on: :create
 
