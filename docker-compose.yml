@@ -1,0 +1,21 @@
+version: '3'
+services:
+  db:
+    restart: always
+    image: postgres:9.6
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+  web:
+    build: .
+    command: rails server -p 80 -b '0.0.0.0'
+    volumes:
+      - .:/smarthome-api
+    ports:
+      - "80:80"
+    links:
+      - db
+    stdin_open: true
+    tty: true
+volumes:
+  postgresql-data:
+    external: true

@@ -1,0 +1,64 @@
+AllCops:
+  DisabledByDefault: true
+  TargetRubyVersion: 2.5.1
+
+  Exclude:
+    - db/**
+    - bin/*
+    - Gemfile
+    - Gemfile.lock
+    - '*.gemspec'
+    - Rakefile
+    - vendor/**/*
+    - node_modules/**/*
+
+Documentation:
+  Enabled: false
+
+Style:
+  Enabled: true
+
+Style/FrozenStringLiteralComment:
+  EnforcedStyle: never
+
+Style/HashSyntax:
+  EnforcedStyle: no_mixed_keys
+
+Style/BlockComments:
+  Enabled: false
+
+Style/AsciiComments:
+  Enabled: false
+
+Style/GuardClause:
+  Enabled: false
+
+Lint:
+  Enabled: true
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/PercentLiteralDelimiters:
+  PreferredDelimiters:
+    '%w': ()
+    '%W': ()
+    '%i': ()
+    '%I': ()
+    '%r': ()
+
+Style/BlockDelimiters:
+  EnforcedStyle: semantic
+  FunctionalMethods:
+    - before
+    - let
+    - let!
+    - subject
+    - watch
+    - expect
+
+Style/ClassVars:
+  Enabled: false
+
+Style/BlockDelimiters:
+  Enabled: false
