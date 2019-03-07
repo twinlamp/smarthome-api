@@ -1,19 +1,15 @@
-class SensorRepresenter < Representable::Decorator
+class RelayRepresenter < Representable::Decorator
   include Representable::JSON
   defaults render_nil: true
 
   property :id
   property :icon
   property :title, exec_context: :decorator
-  property :min
-  property :max
-  property :value, exec_context: :decorator
+  property :sensor, decorator: SensorRepresenter
+  property :value
+  property :state
 
   def title
     represented.name || represented.conf_name || represented.order
-  end
-
-  def value
-    represented.value.to_i
   end
 end

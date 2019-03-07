@@ -7,5 +7,6 @@ class DeviceRepresenter < Representable::Decorator
   property :timezone
   property :identity
 
-  collection :sensors, class: Sensor, decorator: SensorRepresenter, if: -> (user_options:, **) { user_options.try(:[], :with_children) }
+  collection :free_sensors, class: Sensor, decorator: SensorRepresenter, if: -> (user_options:, **) { user_options.try(:[], :with_children) }
+  collection :relays, class: Relay, decorator: RelayRepresenter, if: -> (user_options:, **) { user_options.try(:[], :with_children) }
 end
