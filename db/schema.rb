@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_03_07_115724) do
+ActiveRecord::Schema.define(version: 2019_03_13_160437) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -36,6 +36,13 @@ ActiveRecord::Schema.define(version: 2019_03_07_115724) do
     t.index ["sensor_id"], name: "index_relays_on_sensor_id"
   end
 
+  create_table "sensor_values", force: :cascade do |t|
+    t.bigint "sensor_id"
+    t.decimal "value"
+    t.datetime "registered_at"
+    t.index ["sensor_id"], name: "index_sensor_values_on_sensor_id"
+  end
+
   create_table "sensors", force: :cascade do |t|
     t.bigint "device_id"
     t.string "icon"
@@ -56,5 +63,6 @@ ActiveRecord::Schema.define(version: 2019_03_07_115724) do
   add_foreign_key "devices", "users"
   add_foreign_key "relays", "devices"
   add_foreign_key "relays", "sensors"
+  add_foreign_key "sensor_values", "sensors"
   add_foreign_key "sensors", "devices"
 end

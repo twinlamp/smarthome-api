@@ -5,6 +5,7 @@ class RelayRepresenter < Representable::Decorator
   property :id
   property :icon
   property :title, exec_context: :decorator
+  property :name
   property :sensor, decorator: SensorRepresenter
   property :value
   property :state
