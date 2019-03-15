@@ -13,11 +13,17 @@ class SensorRepresenter < Representable::Decorator
 
   collection :values, class: SensorValue, decorator: SensorValueRepresenter, if: -> (user_options:, **) { user_options.try(:[], :with_values) }
 
+  property :timezone, exec_context: :decorator, if: -> (user_options:, **) { user_options.try(:[], :with_values) }
+
   def title
     represented.name || represented.conf_name || represented.order
   end
 
   def value
     represented.value.to_i
+  end
+
+  def timezone
+    represented.device&.timezone
   end
 end

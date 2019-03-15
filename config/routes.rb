@@ -6,7 +6,8 @@ Rails.application.routes.draw do
         post :sign_in, to: 'authentications#create'
       end
       resources :devices
-      resources :sensors, only: [:show, :update]
+      resources :sensors, only: %i(show update)
+      resources :sensor_values, only: :index
     end
   end
 end
