@@ -1,4 +1,4 @@
-class Api::SensorValuesController < ApplicationController
+class SensorValuesController < ApplicationController
 
   api :GET, '/v1/sensor_values', 'Values List For Sensor'
   param :sensor_id, String, required: true, desc: 'Sensor ID'

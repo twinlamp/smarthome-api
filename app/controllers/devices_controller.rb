@@ -1,4 +1,4 @@
-class Api::DevicesController < ApplicationController
+class DevicesController < ApplicationController
 
   api :GET, '/v1/devices', 'Device List'
   formats ['json']

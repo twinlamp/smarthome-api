@@ -1,4 +1,4 @@
-class Api::RegistrationsController < ApplicationController
+class RegistrationsController < ApplicationController
   skip_before_action :authenticate_user
 
   api :POST, '/v1/auth/sign_up', 'User registration'

@@ -1,4 +1,4 @@
-class Api::AuthenticationsController < ApplicationController
+class AuthenticationsController < ApplicationController
   skip_before_action :authenticate_user
 
   api :POST, '/v1/auth/sign_in', 'User authentication'

@@ -1,4 +1,4 @@
-class Api::SensorsController < ApplicationController
+class SensorsController < ApplicationController
 
   api :PUT, '/v1/sensors/{id}', 'Update sensor data'
   formats ['json']

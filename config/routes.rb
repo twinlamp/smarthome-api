@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  namespace :api do
+  scope :api do
     scope :v1 do
       scope :auth do
         post :sign_up, to: 'registrations#create'
