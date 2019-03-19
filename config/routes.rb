@@ -7,6 +7,7 @@ Rails.application.routes.draw do
       end
       resources :devices
       resources :sensors, only: %i(show update)
+      resources :relays, only: %i(show update)
       resources :sensor_values, only: :index
     end
   end
