@@ -7,6 +7,7 @@ class RelayRepresenter < Representable::Decorator
   property :title, exec_context: :decorator
   property :name
   property :sensor, decorator: SensorRepresenter
+  property :task, exec_context: :decorator, decorator: TaskRepresenter
   property :value
   property :state
   property :device_id
@@ -20,5 +21,9 @@ class RelayRepresenter < Representable::Decorator
     ary = [represented.sensor]
     ary += represented.device.free_sensors
     ary
+  end
+
+  def task
+    represented.task || Task.new
   end
 end
