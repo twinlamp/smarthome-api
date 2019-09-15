@@ -3,7 +3,6 @@ class TaskScheduleRepresenter < Representable::Decorator
   defaults render_nil: true
 
   property :id
-  property :task_id
   property :start
   property :stop
   property :days

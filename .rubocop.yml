@@ -36,16 +36,11 @@ Style/GuardClause:
 Lint:
   Enabled: true
 
-Style/ClassAndModuleChildren:
+Style/LambdaCall:
   Enabled: false
 
-Style/PercentLiteralDelimiters:
-  PreferredDelimiters:
-    '%w': ()
-    '%W': ()
-    '%i': ()
-    '%I': ()
-    '%r': ()
+Style/ClassAndModuleChildren:
+  Enabled: false
 
 Style/BlockDelimiters:
   EnforcedStyle: semantic

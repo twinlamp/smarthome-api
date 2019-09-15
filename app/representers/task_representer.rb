@@ -9,6 +9,6 @@ class TaskRepresenter < Representable::Decorator
   property :task_schedule, exec_context: :decorator, decorator: TaskScheduleRepresenter
 
   def task_schedule
-    represented.task_schedule || TaskSchedule.new
+    represented.task_schedule || represented.build_task_schedule
   end
 end

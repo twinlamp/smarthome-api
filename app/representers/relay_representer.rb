@@ -24,6 +24,6 @@ class RelayRepresenter < Representable::Decorator
   end
 
   def task
-    represented.task || Task.new
+    represented.task || represented.build_task
   end
 end
