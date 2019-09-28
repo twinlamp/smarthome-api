@@ -41,7 +41,7 @@ class RelaysController < ApplicationController
   }
   EOS
   def update
-    update_relay.(user: current_user, params: params_hash) do |m|
+    update_relay.(user: current_user, params: params) do |m|
       m.success do |relay|
         render json: { relay: ::RelayRepresenter.new(relay[:model]) }, status: :ok
       end

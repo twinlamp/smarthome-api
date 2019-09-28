@@ -13,10 +13,10 @@ gem 'rails', '~> 5.2.2'
 gem 'representable'
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
-gem 'dry-monads', '~> 1.1'
-gem 'dry-system', '~> 0.10.1'
+gem 'dry-monads', '~> 1.3'
+gem 'dry-system', '~> 0.12'
 gem 'dry-transaction', '~> 0.13.0'
-gem 'dry-validation', '~> 0.12.2'
+gem 'dry-validation', '~> 1.3'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
