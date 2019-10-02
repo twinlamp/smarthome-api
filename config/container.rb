@@ -6,7 +6,7 @@ module SmarthomeApi
       config.name = :smarthome_api
       config.root = File.expand_path('../', __dir__).freeze
       config.system_dir = config.root / 'config' / 'system'
-      config.auto_register = %w[app/transactions app/validations]
+      config.auto_register = %w[app/policies app/transactions app/validations]
     end
 
     load_paths! 'app', 'lib'

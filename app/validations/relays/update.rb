@@ -20,18 +20,22 @@ module Validations
           required(:sensor_id).filled(:integer)
 
           optional(:task).schema do
+            required(:values_range).filled(:bool)
+
             optional(:min).maybe(:integer)
             optional(:max).maybe(:integer)
 
             optional(:task_schedule).schema do
-              optional(:start).maybe(:date)
-              optional(:stop).maybe(:date)
+              required(:schedule).filled(:string)
+
+              optional(:start).maybe(:date_time)
+              optional(:stop).maybe(:date_time)
 
               optional(:days).schema do
                 DAYS.each do |day|
                   required(day).schema do
-                    required(:on).maybe(:time)
-                    required(:off).maybe(:time)
+                    required(:on).maybe(:integer, gt?: 0, lt?: 86_400_000)
+                    required(:off).maybe(:integer, gt?: 0, lt?: 86_400_000)
                   end
                 end
               end
@@ -47,9 +51,12 @@ module Validations
         end
       end
 
-      rule(relay: { task: { task_schedule: %i[start stop] }}) do
-        key.failure('start should be before stop') unless (values[:start].nil? && values[:stop].nil?) || 
-          (values[:start] && values[:stop] && values[:start] < values[:stop])
+      rule(relay: { task: { task_schedule: :start }}) do
+        start = value
+        stop = values.data.dig(:relay, :task, :task_schedule, :stop)
+
+        key.failure('start should be before stop') unless (start.nil? && stop.nil?) || 
+          (start && stop && start < stop)
       end
     end
   end
