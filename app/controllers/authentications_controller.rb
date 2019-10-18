@@ -1,4 +1,8 @@
 class AuthenticationsController < ApplicationController
+  include SmarthomeApi::Import[
+    auth_user: 'transactions.users.auth'
+  ]
+
   skip_before_action :authenticate_user
 
   api :POST, '/v1/auth/sign_in', 'User authentication'
@@ -25,18 +29,14 @@ class AuthenticationsController < ApplicationController
     }
   EOS
   def create
-    @user = User.find_by(email: auth_params[:email])
-    if @user&.authenticate(auth_params[:password])
-      jwt = Knock::AuthToken.new(payload: { sub: @user.id }).token
-      render json: { token: jwt, expire: DateTime.now + Knock.token_lifetime, user: ::UserRepresenter.new(@user) }, status: :created
-    else
-      render json: { errors: { email: 'Wrong email or password' } }, status: :unprocessable_entity
+    auth_user.(params: params) do |m|
+      m.success do |result|
+        render json: { token: result[:token], expire: result[:expire], user: ::UserRepresenter.new(result[:model]) }, status: :created
+      end
+
+      m.failure do |errors|
+        render json: { errors: errors }, status: :unprocessable_entity
+      end
     end
-  end
-
-  private
-
-  def auth_params
-    params.permit(:email, :password)
   end
 end

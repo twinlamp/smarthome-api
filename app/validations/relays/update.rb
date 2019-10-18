@@ -1,13 +1,6 @@
 module Validations
   module Relays
-    class Update < Dry::Validation::Contract
-
-      def call(input)
-        result = super(input[:params].permit!.to_h)
-
-        return Dry::Monads::Result::Failure.new(result.errors.to_h) if result.failure?
-        Dry::Monads::Result::Success.new(input.merge(params: result.schema_result.output))
-      end
+    class Update < Validator
 
       DAYS = %i[mon tue wed thu fri sat sun].freeze
 
@@ -57,6 +50,11 @@ module Validations
 
         key.failure('start should be before stop') unless (start.nil? && stop.nil?) || 
           (start && stop && start < stop)
+      end
+
+      rule(relay: :name) do
+        other_relays = Relay.where(name: value, device_id: Relay.find_by(id: values.data[:id])&.device_id).where.not(id: values.data[:id])
+        key.failure('name must be unique') unless other_relays.none?
       end
     end
   end

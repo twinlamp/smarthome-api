@@ -1,4 +1,10 @@
 class DevicesController < ApplicationController
+  include SmarthomeApi::Import[
+    index_device: 'transactions.devices.index',
+    create_device: 'transactions.devices.create',
+    update_device: 'transactions.devices.update',
+    show_device: 'transactions.devices.show',
+  ]
 
   api :GET, '/v1/devices', 'Device List'
   formats ['json']
@@ -13,8 +19,15 @@ class DevicesController < ApplicationController
     ]
   EOS
   def index
-    @devices = current_user&.devices
-    render json: ::DeviceRepresenter.for_collection.new(@devices), status: :ok
+    index_device.(user: current_user) do |m|
+      m.success do |result|
+        render json: { data: ::DeviceRepresenter.for_collection.new(result[:data]) }, status: :ok
+      end
+
+      m.failure :policy do
+        head :forbidden
+      end
+    end
   end
 
   api :POST, '/v1/devices', 'Create device'
@@ -41,11 +54,18 @@ class DevicesController < ApplicationController
   }
   EOS
   def create
-    @device = current_user.devices.new(device_params)
-    if @device.save
-      render json: { device: ::DeviceRepresenter.new(@device) }, status: :created
-    else
-      render json: { errors: @device.errors }, status: :unprocessable_entity
+    create_device.(user: current_user, params: params) do |m|
+      m.success do |result|
+        render json: { relay: ::DeviceRepresenter.new(result[:model]) }, status: :created
+      end
+
+      m.failure :policy do
+        head :forbidden
+      end
+
+      m.failure do |errors|
+        render json: { errors: errors }, status: :unprocessable_entity
+      end
     end
   end
 
@@ -73,11 +93,22 @@ class DevicesController < ApplicationController
   }
   EOS
   def update
-    @device = current_user.devices.find(params[:id])
-    if @device.update(device_params)
-      render json: { device: ::DeviceRepresenter.new(@device) }, status: :ok
-    else
-      render json: { errors: @device.errors }, status: :unprocessable_entity
+    update_device.(user: current_user, params: params) do |m|
+      m.success do |result|
+        render json: { relay: ::DeviceRepresenter.new(result[:model]) }, status: :ok
+      end
+
+      m.failure :policy do
+        head :forbidden
+      end
+
+      m.failure :find_device do
+        head :not_found
+      end
+
+      m.failure do |errors|
+        render json: { errors: errors }, status: :unprocessable_entity
+      end
     end
   end
 
@@ -96,13 +127,23 @@ class DevicesController < ApplicationController
   }
   EOS
   def show
-    @device = current_user.devices.find(params[:id])
-    render json: { device: ::DeviceRepresenter.new(@device).to_hash(user_options: { with_children: true }) }, status: :ok
+    byebug
+    show_device.(user: current_user, params: params) do |m|
+      m.success do |response|
+        render json: { device: ::DeviceRepresenter.new(response[:model]).to_hash(user_options: { with_children: true }) }, status: :ok
+      end
+
+      m.failure :policy do
+        head :forbidden
+      end
+
+      m.failure :find_device do
+        head :not_found
+      end
+
+      m.failure do |errors|
+        render json: { errors: errors }, status: :unprocessable_entity
+      end
+    end
   end
-
-  private
-
-  def device_params
-    params.require(:device).permit(:name, :timezone)
-  end 
 end

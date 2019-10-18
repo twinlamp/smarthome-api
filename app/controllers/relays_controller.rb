@@ -1,6 +1,7 @@
 class RelaysController < ApplicationController
   include SmarthomeApi::Import[
-    update_relay: 'transactions.relays.update_relay'
+    update_relay: 'transactions.relays.update',
+    show_relay: 'transactions.relays.show'
   ]
 
   api :PUT, '/v1/relays/{id}', 'Update relay data'
@@ -42,8 +43,8 @@ class RelaysController < ApplicationController
   EOS
   def update
     update_relay.(user: current_user, params: params) do |m|
-      m.success do |relay|
-        render json: { relay: ::RelayRepresenter.new(relay[:model]) }, status: :ok
+      m.success do |result|
+        render json: { relay: ::RelayRepresenter.new(result[:model]) }, status: :ok
       end
 
       m.failure :policy do
@@ -110,13 +111,22 @@ class RelaysController < ApplicationController
   }
   EOS
   def show
-    @relay = Relay.where(device_id: current_user.device_ids).find(params[:id])
-    render json: { relay: ::RelayRepresenter.new(@relay).to_hash(user_options: { with_possible_sensors: true }) }, status: :ok
+    show_relay.(user: current_user, params: params) do |m|
+      m.success do |result|
+        render json: { relay: ::RelayRepresenter.new(result[:model]).to_hash(user_options: { with_possible_sensors: true }) }, status: :ok
+      end
+
+      m.failure :policy do
+        head :forbidden
+      end
+
+      m.failure :find_relay do
+        head :not_found
+      end
+
+      m.failure do |errors|
+        render json: { errors: errors }, status: :unprocessable_entity
+      end
+    end
   end
-
-  private
-
-  def relay_params
-    params.require(:relay).permit(:name, :icon, :state, :sensor_id, task: [ :min, :max, task_schedule: [ :start, :stop, :days ]])
-  end 
 end

@@ -1,4 +1,8 @@
 class SensorsController < ApplicationController
+  include SmarthomeApi::Import[
+    update_sensor: 'transactions.sensors.update',
+    show_sensor: 'transactions.sensors.show'
+  ]
 
   api :PUT, '/v1/sensors/{id}', 'Update sensor data'
   formats ['json']
@@ -29,11 +33,22 @@ class SensorsController < ApplicationController
   }
   EOS
   def update
-    @sensor = Sensor.where(device_id: current_user.device_ids).find(params[:id])
-    if @sensor.update(sensor_params)
-      render json: { sensor: ::SensorRepresenter.new(@sensor) }, status: :ok
-    else
-      render json: { errors: @sensor.errors }, status: :unprocessable_entity
+    update_sensor.(user: current_user, params: params) do |m|
+      m.success do |response|
+        render json: { sensor: ::SensorRepresenter.new(response[:model]) }, status: :ok
+      end
+
+      m.failure :policy do
+        head :forbidden
+      end
+
+      m.failure :find_sensor do
+        head :not_found
+      end
+
+      m.failure do |errors|
+        render json: { errors: errors }, status: :unprocessable_entity
+      end
     end
   end
 
@@ -55,13 +70,22 @@ class SensorsController < ApplicationController
   }
   EOS
   def show
-    @sensor = Sensor.where(device_id: current_user.device_ids).find(params[:id])
-    render json: { sensor: ::SensorRepresenter.new(@sensor).to_hash(user_options: { with_values: true }) }, status: :ok
+    show_sensor.(user: current_user, params: params) do |m|
+      m.success do |response|
+        render json: { sensor: ::SensorRepresenter.new(response[:model]).to_hash(user_options: { with_values: true }) }, status: :ok
+      end
+
+      m.failure :policy do
+        head :forbidden
+      end
+
+      m.failure :find_sensor do
+        head :not_found
+      end
+
+      m.failure do |errors|
+        render json: { errors: errors }, status: :unprocessable_entity
+      end
+    end
   end
-
-  private
-
-  def sensor_params
-    params.require(:sensor).permit(:name, :icon, :min, :max)
-  end 
 end

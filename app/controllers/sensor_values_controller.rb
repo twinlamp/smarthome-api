@@ -1,4 +1,7 @@
 class SensorValuesController < ApplicationController
+  include SmarthomeApi::Import[
+    index_sensor_value: 'transactions.sensor_values.index'
+  ]
 
   api :GET, '/v1/sensor_values', 'Values List For Sensor'
   param :sensor_id, String, required: true, desc: 'Sensor ID'
@@ -22,8 +25,22 @@ class SensorValuesController < ApplicationController
     ]
   EOS
   def index
-    sensor = Sensor.where(device_id: current_user.device_ids).find(params[:sensor_id])
-    @sensor_values = sensor.values.filter_by_dates(params[:from], params[:to]).limit_to_n_elements(200)
-    render json: ::SensorValueRepresenter.for_collection.new(@sensor_values), status: :ok
+    index_sensor_value.(user: current_user, params: params) do |m|
+      m.success do |result|
+        render json: { data: ::SensorValueRepresenter.for_collection.new(result[:data]) }, status: :ok
+      end
+
+      m.failure :policy do
+        head :forbidden
+      end
+
+      m.failure :find_sensor do
+        head :not_found
+      end
+
+      m.failure do |errors|
+        render json: { errors: errors }, status: :unprocessable_entity
+      end
+    end
   end
 end

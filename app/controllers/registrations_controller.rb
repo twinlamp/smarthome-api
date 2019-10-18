@@ -1,4 +1,8 @@
 class RegistrationsController < ApplicationController
+  include SmarthomeApi::Import[
+    create_user: 'transactions.users.create'
+  ]
+
   skip_before_action :authenticate_user
 
   api :POST, '/v1/auth/sign_up', 'User registration'
@@ -26,18 +30,14 @@ class RegistrationsController < ApplicationController
     }
   EOS
   def create
-    @user = User.create(user_params)
-    if @user.persisted?
-      jwt = Knock::AuthToken.new(payload: { sub: @user.id }).token
-      render json: { token: token, expire: DateTime.now + Knock.token_lifetime, user: ::UserRepresenter.new(@user) }, status: :created
-    else
-      render json: { errors: @user.errors }, status: :unprocessable_entity
+    create_user.(params: params) do |m|
+      m.success do |result|
+        render json: { token: result[:token], expire: result[:expire], user: ::UserRepresenter.new(result[:model]) }, status: :ok
+      end
+
+      m.failure do |errors|
+        render json: { errors: errors }, status: :unprocessable_entity
+      end
     end
   end
-
-  private
-
-  def user_params
-    params.permit(:email, :password)
-  end 
 end

@@ -1,6 +1,6 @@
 module Transactions
   module Relays
-    class UpdateRelay
+    class Update
       include Dry::Transaction(container: SmarthomeApi::Container)
 
       step :validate, with: 'validations.relays.update'
