@@ -10,7 +10,7 @@ module Validations
           required(:icon).filled(:string)
           required(:name).filled(:string)
           required(:state).filled(:string, included_in?: %w[off on task_mode])
-          required(:sensor_id).filled(:integer)
+          optional(:sensor_id).maybe(:integer)
 
           optional(:task).schema do
             required(:values_range).filled(:bool)
@@ -19,7 +19,7 @@ module Validations
             optional(:max).maybe(:integer)
 
             optional(:task_schedule).schema do
-              required(:schedule).filled(:string)
+              required(:schedule).filled(:string, included_in?: %w[none calendar weekly])
 
               optional(:start).maybe(:date_time)
               optional(:stop).maybe(:date_time)
@@ -39,7 +39,7 @@ module Validations
 
       DAYS.each do |day|
         rule(relay: { task: { task_schedule: { days: day }}}) do
-          key.failure('on should be before off') unless (value[:on].nil? && value[:off].nil?) ||
+          key.failure('on should be before off') unless value.nil? || (value[:on].nil? && value[:off].nil?) ||
             (value[:on] && value[:off] && value[:off] > value[:on])
         end
       end
@@ -52,9 +52,17 @@ module Validations
           (start && stop && start < stop)
       end
 
+      rule(relay: { task: :min }) do
+        min = value
+        max = values.data.dig(:relay, :task, :max)
+
+        key.failure('both min and max are required') unless (min.nil? && max.nil?) || 
+          (min && max)
+      end
+
       rule(relay: :name) do
         other_relays = Relay.where(name: value, device_id: Relay.find_by(id: values.data[:id])&.device_id).where.not(id: values.data[:id])
-        key.failure('name must be unique') unless other_relays.none?
+        key.failure('must be unique') unless other_relays.none?
       end
     end
   end

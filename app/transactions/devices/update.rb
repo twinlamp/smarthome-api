@@ -5,7 +5,7 @@ module Transactions
 
       step :set_user_id
       step :validate, with: 'validations.devices.update'
-      step :find_device
+      try :find_device, catch: ActiveRecord::RecordNotFound
       check :policy, with: 'policies.device_owner'
       step :update
 
@@ -18,7 +18,7 @@ module Transactions
 
       def find_device(input)
         device = ::Device.find(input[:params][:id])
-        Success(input.merge(model: device))
+        input.merge(model: device)
       end
 
       def update(input)

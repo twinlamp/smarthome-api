@@ -4,7 +4,7 @@ module Transactions
       include Dry::Transaction(container: SmarthomeApi::Container)
 
       step :validate, with: 'validations.sensors.update'
-      step :find_sensor
+      try :find_sensor, catch: ActiveRecord::RecordNotFound
       check :policy, with: 'policies.device_owner'
       step :update
 
@@ -12,7 +12,7 @@ module Transactions
 
       def find_sensor(input)
         sensor = ::Sensor.find(input[:params][:id])
-        Success(input.merge(model: sensor))
+        input.merge(model: sensor)
       end
 
       def update(input)

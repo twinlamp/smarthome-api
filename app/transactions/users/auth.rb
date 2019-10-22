@@ -1,6 +1,6 @@
 module Transactions
   module Users
-    class Create
+    class Auth
       include Dry::Transaction(container: SmarthomeApi::Container)
 
       step :validate, with: 'validations.users.auth'
@@ -14,7 +14,7 @@ module Transactions
         if user&.authenticate(input[:params][:password])
           Success(input.merge(model: user))
         else
-          Failure(email: 'Wrong email or password')
+          Failure(email: ['Wrong email or password'])
         end
       end
 

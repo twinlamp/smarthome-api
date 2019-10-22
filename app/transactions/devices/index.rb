@@ -8,13 +8,8 @@ module Transactions
 
       private
 
-      def find_sensor(input)
-        sensor = ::Sensor.find(input[:params][:sensor_id])
-        Success(input.merge(model: sensor))
-      end
-
       def find_devices(input)
-        Success(input.merge(data: current_user&.devices))
+        Success(input.merge(data: input[:user].devices))
       end
     end
   end

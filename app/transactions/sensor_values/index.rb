@@ -4,7 +4,7 @@ module Transactions
       include Dry::Transaction(container: SmarthomeApi::Container)
 
       step :validate, with: 'validations.sensor_values.index'
-      step :find_sensor
+      try :find_sensor, catch: ActiveRecord::RecordNotFound
       check :policy, with: 'policies.device_owner'
       step :find_values
 
@@ -12,7 +12,7 @@ module Transactions
 
       def find_sensor(input)
         sensor = ::Sensor.find(input[:params][:sensor_id])
-        Success(input.merge(model: sensor))
+        input.merge(model: sensor)
       end
 
       def find_values(input)
@@ -31,7 +31,7 @@ module Transactions
                       (:to is NULL and :from IS NULL)
                     ORDER BY registered_at
                   ) as data
-            WHERE MOD(rnk,((CASE WHEN total_cnt > 0 THEN total_cnt ELSE 1 END)/200)) = 0
+            WHERE MOD(rnk,((CASE WHEN total_cnt > 0 THEN total_cnt ELSE 1.0 END)/200)) = 0
           ), from: input[:params][:from], to: input[:params][:to]])
 
         Success(input.merge(data: sv))

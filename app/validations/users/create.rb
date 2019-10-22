@@ -8,7 +8,7 @@ module Validations
       end
 
       rule(:email) do
-        key.failure('email must be unique') unless User.where(email: value).none?
+        key.failure('must be unique') unless User.where(email: value).none?
       end
     end
   end

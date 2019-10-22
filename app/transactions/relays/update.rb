@@ -4,8 +4,9 @@ module Transactions
       include Dry::Transaction(container: SmarthomeApi::Container)
 
       step :validate, with: 'validations.relays.update'
-      step :find_relay
+      try :find_relay, catch: ActiveRecord::RecordNotFound
       check :policy, with: 'policies.device_owner'
+      step :consider_values_range
       step :consider_schedule
       step :update
 
@@ -13,10 +14,18 @@ module Transactions
 
       def find_relay(input)
         relay = ::Relay.find(input[:params][:id])
-        Success(input.merge(model: relay))
+        input.merge(model: relay)
+      end
+
+      def consider_values_range(input)
+        nullify_minmax(input) if input[:params][:relay][:task].to_h.key?(:values_range) && input[:params][:relay][:task][:values_range] == false
+
+        Success(input)
       end
 
       def consider_schedule(input)
+        return Success(input) unless input[:params][:relay].dig(:task, :task_schedule)
+
         case input[:params][:relay][:task][:task_schedule][:schedule]
         when 'calendar'
           nullify_weekly(input)
@@ -27,8 +36,6 @@ module Transactions
           nullify_calendar(input)
         end
 
-        nullify_minmax(input) unless input[:params][:relay][:task][:values_range]
-
         Success(input)
       end
 
@@ -36,11 +43,11 @@ module Transactions
         ActiveRecord::Base.transaction do
           input[:model].update(input[:params][:relay].except(:task))
 
-          return unless input[:params][:relay][:task]
+          next unless input[:params][:relay][:task]
           task = input[:model].task || input[:model].build_task
           task.update(input[:params][:relay][:task].except(:task_schedule, :values_range))
 
-          return unless input[:params][:relay][:task][:task_schedule]
+          next unless input[:params][:relay][:task][:task_schedule]
           task_schedule = task.task_schedule || task.build_task_schedule
           task_schedule.update(input[:params][:relay][:task][:task_schedule].except(:schedule))
         end
@@ -48,6 +55,8 @@ module Transactions
       end
 
       def nullify_weekly(input)
+        return unless input[:params][:relay][:task][:task_schedule][:days]
+
         input[:params][:relay][:task][:task_schedule][:days].keys.each do |day|
           input[:params][:relay][:task][:task_schedule][:days][day] = { on: nil, off: nil }
         end

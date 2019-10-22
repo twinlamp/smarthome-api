@@ -20,6 +20,12 @@ gem 'dry-validation', '~> 1.3'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'database_cleaner', '~> 1.7.0'
+  gem 'factory_bot_rails', '~> 5.0.1'
+  gem 'rspec-its', '~> 1.2', require: false
+  gem 'rspec-rails', '~> 3.8.2'
+  gem 'rubocop', '~> 0.66.0', require: false
+  gem 'rubocop-rspec', '~> 1.30', require: false
 end
 
 group :development do
@@ -27,5 +33,3 @@ group :development do
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
 end
-
-

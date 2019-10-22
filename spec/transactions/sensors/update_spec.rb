@@ -1,8 +1,32 @@
 require 'rails_helper'
 
 RSpec.describe Transactions::Sensors::Update do
-  subject(:result) { described_class.new.(data) }
-  let(:input) { { params: params } }
+  subject(:result) { described_class.new.(input) }
+  let(:input) { { user: user, params: ActionController::Parameters.new(params) } }
+  let!(:user) { create(:user) }
+  let(:matcher) {
+    proc { |m|
+      m.success do
+        'success'
+      end
+
+      m.failure :validate do
+        'validate'
+      end
+
+      m.failure :find_sensor do
+        'find_sensor'
+      end
+
+      m.failure :policy do
+        'policy'
+      end
+
+      m.failure :update do
+        'update'
+      end
+    }
+  }
 
   context 'valid params' do
     context 'missing sensor' do
@@ -10,7 +34,7 @@ RSpec.describe Transactions::Sensors::Update do
 
       let(:params) { { id: 1, sensor: attributes_for(:sensor) } }
 
-      it { expect { |block| operation.call(input, &block) }.to fail_at(:find_sensor) }
+      it { expect(operation.call(input, &matcher)).to eq('find_sensor') }
     end
 
     context 'sensor exists' do
@@ -18,16 +42,15 @@ RSpec.describe Transactions::Sensors::Update do
         subject(:operation) { described_class.new }
 
         let!(:sensor) { create(:sensor) }
-        let!(:user) { create(:user) }
-        let(:params) { { id: sensor.id, sensor: sensor.attributes, user: user } }
+        let(:params) { { id: sensor.id, sensor: sensor.attributes } }
 
-        it { expect { |block| operation.call(input, &block) }.to fail_at(:policy) }
+        it { expect(operation.call(input, &matcher)).to eq('policy') }
       end
 
       context 'user is owner' do
-        let!(:user) { create(:user) }
-        let!(:sensor) { create(:sensor, user: user) }
-        let(:params) { sensor.attributes.merge(name: 'updated') }
+        let!(:device) { create(:device, user: user) }
+        let!(:sensor) { create(:sensor, device: device) }
+        let(:params) { { id: sensor.id, sensor: sensor.attributes.merge(name: 'updated') } }
 
         it { is_expected.to be_success }
         it { expect(result.success[:model]).to_not be_nil }
@@ -40,13 +63,13 @@ RSpec.describe Transactions::Sensors::Update do
     context 'empty params' do
       let(:params) { {} }
 
-      it { is_expected.to have_errors_on(id: :key?) }
+      it { expect(subject.failure[:id]).to eq(['is missing']) }
     end
 
     context 'missing name' do
       let(:params) { { id: 1, sensor: attributes_for(:sensor).merge(name: '') } }
 
-      it { is_expected.to have_errors_on(sensor: { name: :filled? }) }
+      it { expect(subject.failure[:sensor][:name]).to eq(['must be filled']) }
     end
 
     context 'duplicate name' do
@@ -54,31 +77,31 @@ RSpec.describe Transactions::Sensors::Update do
       let!(:another_sensor) { create(:sensor, device: sensor.device) }
       let(:params) { { id: sensor.id, sensor: attributes_for(:sensor).merge(name: another_sensor.name) } }
 
-      it { is_expected.to have_errors_on(name: :unique?) }
+      it { expect(subject.failure[:sensor][:name]).to eq(['must be unique']) }
     end
 
     context 'missing icon' do
       let(:params) { { id: 1, sensor: attributes_for(:sensor).merge(icon: '') } }
 
-      it { is_expected.to have_errors_on(sensor: { icon: :filled? }) }
+      it { expect(subject.failure[:sensor][:icon]).to eq(['must be filled']) }
     end
 
     context 'missing min' do
       let(:params) { { id: 1, sensor: attributes_for(:sensor).merge(min: '') } }
 
-      it { is_expected.to have_errors_on(sensor: { min: :filled? }) }
+      it { expect(subject.failure[:sensor][:min]).to eq(['must be filled']) }
     end
 
     context 'missing max' do
       let(:params) { { id: 1, sensor: attributes_for(:sensor).merge(max: '') } }
 
-      it { is_expected.to have_errors_on(sensor: { max: :filled? }) }
+      it { expect(subject.failure[:sensor][:max]).to eq(['must be filled']) }
     end
 
     context 'min > max' do
       let(:params) { { id: 1, sensor: attributes_for(:sensor).merge(min: 100, max: 0) } }
 
-      it { is_expected.to have_errors_on(sensor: { max: :min_gt_max? }) }
+      it { expect(subject.failure[:sensor][:min]).to eq(['min should be < max']) }
     end
   end
 end

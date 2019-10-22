@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Transactions::Users::Auth do
-  subject(:result) { described_class.new.(data) }
-  let(:input) { { params: params } }
+  subject(:result) { described_class.new.(input) }
+  let(:input) { { params: ActionController::Parameters.new(params) } }
 
   context 'valid params' do
     let(:params) { attributes_for(:user) }
@@ -18,32 +18,32 @@ RSpec.describe Transactions::Users::Auth do
     context 'empty params' do
       let(:params) { {} }
 
-      it { is_expected.to have_errors_on(email: :key?) }
+      it { expect(result.failure[:email]).to eq(['is missing']) }
     end
 
     context 'missing email' do
       let(:params) { attributes_for(:user).merge(email: '') }
 
-      it { is_expected.to have_errors_on(email: :filled?) }
+      it { expect(result.failure[:email]).to eq(['must be filled']) }
     end
 
     context 'user does not exist' do
       let(:params) { attributes_for(:user) }
 
-      it { is_expected.to have_errors_on(email: :wrong?) }
+      it { expect(result.failure[:email]).to eq(['Wrong email or password']) }
     end
 
     context 'missing password' do
       let(:params) { attributes_for(:user).merge(password: '') }
 
-      it { is_expected.to have_errors_on(password: :filled?) }
+      it { expect(result.failure[:password]).to eq(['must be filled']) }
     end
 
     context 'invalid password' do
       let(:params) { attributes_for(:user).merge(password: 'qwerty') }
       let!(:user) { create(:user, email: params[:email]) }
 
-      it { is_expected.to have_errors_on(email: :wrong?) }
+      it { expect(result.failure[:email]).to eq(['Wrong email or password']) }
     end
   end
 end
