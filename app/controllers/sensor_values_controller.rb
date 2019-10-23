@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SensorValuesController < ApplicationController
   include SmarthomeApi::Import[
     index_sensor_value: 'transactions.sensor_values.index'

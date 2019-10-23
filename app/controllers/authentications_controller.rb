@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AuthenticationsController < ApplicationController
   include SmarthomeApi::Import[
     auth_user: 'transactions.users.auth'

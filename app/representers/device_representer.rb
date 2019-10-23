@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DeviceRepresenter < Representable::Decorator
   include Representable::JSON
   defaults render_nil: true
@@ -8,8 +10,8 @@ class DeviceRepresenter < Representable::Decorator
   property :timezone
   property :identity
 
-  collection :free_sensors, class: Sensor, decorator: SensorRepresenter, if: -> (user_options:, **) { user_options.try(:[], :with_children) }
-  collection :relays, class: Relay, decorator: RelayRepresenter, if: -> (user_options:, **) { user_options.try(:[], :with_children) }
+  collection :free_sensors, class: Sensor, decorator: SensorRepresenter, if: ->(user_options:, **) { user_options.try(:[], :with_children) }
+  collection :relays, class: Relay, decorator: RelayRepresenter, if: ->(user_options:, **) { user_options.try(:[], :with_children) }
 
   def title
     represented.name

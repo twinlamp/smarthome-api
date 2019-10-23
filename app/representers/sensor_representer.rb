@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SensorRepresenter < Representable::Decorator
   include Representable::JSON
   defaults render_nil: true
@@ -11,9 +13,9 @@ class SensorRepresenter < Representable::Decorator
   property :value, exec_context: :decorator
   property :device_id
 
-  collection :values, class: SensorValue, decorator: SensorValueRepresenter, if: -> (user_options:, **) { user_options.try(:[], :with_values) }
+  collection :values, class: SensorValue, decorator: SensorValueRepresenter, if: ->(user_options:, **) { user_options.try(:[], :with_values) }
 
-  property :timezone, exec_context: :decorator, if: -> (user_options:, **) { user_options.try(:[], :with_values) }
+  property :timezone, exec_context: :decorator, if: ->(user_options:, **) { user_options.try(:[], :with_values) }
 
   def title
     represented.name || represented.conf_name || represented.order

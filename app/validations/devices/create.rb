@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 module Validations
   module Devices
     class Create < Validator
-
       params do
         required(:user_id).filled(:integer)
         required(:name).filled(:string)

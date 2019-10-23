@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 module Validations
   module Sensors
     class Update < Validator
-
       params do
         required(:id).filled(:integer)
         required(:sensor).schema do
@@ -20,7 +21,7 @@ module Validations
       end
 
       rule(sensor: :name) do
-        other_sensors = Sensor.where.not(id: values.data[:id]).where(name: value, device_id: Sensor.find_by(id: values.data[:id])&.device_id)        
+        other_sensors = Sensor.where.not(id: values.data[:id]).where(name: value, device_id: Sensor.find_by(id: values.data[:id])&.device_id)
         key.failure('must be unique') unless other_sensors.none?
       end
     end

@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 module Validations
   module Devices
     class Update < Validator
-
       params do
         required(:id).filled(:integer)
         required(:device).schema do

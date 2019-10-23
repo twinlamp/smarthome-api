@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :relay do
     sequence(:name) { |n| "sensor_#{n}" }

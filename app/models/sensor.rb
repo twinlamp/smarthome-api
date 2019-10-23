@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Sensor < ApplicationRecord
   belongs_to :device
   has_one :relay

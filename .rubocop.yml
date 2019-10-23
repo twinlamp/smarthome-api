@@ -1,6 +1,9 @@
+require: rubocop-rspec
+
 AllCops:
   DisabledByDefault: true
-  TargetRubyVersion: 2.5.1
+  TargetRubyVersion: 2.6.1
+  TargetRailsVersion: 5.2
 
   Exclude:
     - db/**
@@ -15,17 +18,17 @@ AllCops:
 Documentation:
   Enabled: false
 
+Lint:
+  Enabled: true
+
+Layout:
+  Enabled: true
+
 Style:
   Enabled: true
 
-Style/FrozenStringLiteralComment:
-  EnforcedStyle: never
-
 Style/HashSyntax:
   EnforcedStyle: no_mixed_keys
-
-Style/BlockComments:
-  Enabled: false
 
 Style/AsciiComments:
   Enabled: false
@@ -33,27 +36,56 @@ Style/AsciiComments:
 Style/GuardClause:
   Enabled: false
 
-Lint:
-  Enabled: true
-
-Style/LambdaCall:
-  Enabled: false
-
 Style/ClassAndModuleChildren:
   Enabled: false
-
-Style/BlockDelimiters:
-  EnforcedStyle: semantic
-  FunctionalMethods:
-    - before
-    - let
-    - let!
-    - subject
-    - watch
-    - expect
 
 Style/ClassVars:
   Enabled: false
 
 Style/BlockDelimiters:
   Enabled: false
+
+Style/Lambda:
+  EnforcedStyle: literal
+
+Style/LambdaCall:
+  Enabled: false
+
+Style/AndOr:
+  Enabled: false
+
+Naming/HeredocDelimiterCase:
+  Enabled: true
+
+Naming/UncommunicativeMethodParamName:
+  Enabled: false
+
+Performance/ChainArrayAllocation:
+  Enabled: true
+
+Rails:
+  Enabled: true
+
+Rails/UnknownEnv:
+  Environments:
+    - test
+    - development
+    - production
+
+RSpec/MultipleExpectations:
+  Enabled: true
+
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/RepeatedDescription:
+  Enabled: false
+
+RSpec/EmptyExampleGroup:
+  Enabled: true
+
+RSpec/DescribeClass:
+  Enabled: true
+
+RSpec/ScatteredSetup:
+  Enabled: true

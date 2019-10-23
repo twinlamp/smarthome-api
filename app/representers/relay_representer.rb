@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RelayRepresenter < Representable::Decorator
   include Representable::JSON
   defaults render_nil: true
@@ -11,7 +13,7 @@ class RelayRepresenter < Representable::Decorator
   property :value
   property :state
   property :device_id
-  collection :possible_sensors, exec_context: :decorator, decorator: SensorRepresenter, if: -> (user_options:, **) { user_options.try(:[], :with_possible_sensors) }
+  collection :possible_sensors, exec_context: :decorator, decorator: SensorRepresenter, if: ->(user_options:, **) { user_options.try(:[], :with_possible_sensors) }
 
   def title
     represented.name || represented.conf_name || represented.order

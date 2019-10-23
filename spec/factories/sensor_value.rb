@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :sensor_value do
     value { (rand * 100).to_i }

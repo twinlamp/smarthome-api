@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SensorsController < ApplicationController
   include SmarthomeApi::Import[
     update_sensor: 'transactions.sensors.update',
@@ -15,7 +17,7 @@ class SensorsController < ApplicationController
       "name": "test",
       "icon": "temperature",
       "min"=>0.0,
-      "max"=>0.1e3  
+      "max"=>0.1e3
     }
   }
 

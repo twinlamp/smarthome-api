@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RegistrationsController < ApplicationController
   include SmarthomeApi::Import[
     create_user: 'transactions.users.create'

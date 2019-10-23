@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Transactions
   module Relays
     class Update
@@ -44,10 +46,12 @@ module Transactions
           input[:model].update(input[:params][:relay].except(:task))
 
           next unless input[:params][:relay][:task]
+
           task = input[:model].task || input[:model].build_task
           task.update(input[:params][:relay][:task].except(:task_schedule, :values_range))
 
           next unless input[:params][:relay][:task][:task_schedule]
+
           task_schedule = task.task_schedule || task.build_task_schedule
           task_schedule.update(input[:params][:relay][:task][:task_schedule].except(:schedule))
         end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DevicesController < ApplicationController
   include SmarthomeApi::Import[
     index_device: 'transactions.devices.index',
@@ -39,7 +41,7 @@ class DevicesController < ApplicationController
   {
     "device": {
       "name": "test device",
-      "avatar": "Europe/Moscow",      
+      "avatar": "Europe/Moscow",
     }
   }
 
@@ -78,7 +80,7 @@ class DevicesController < ApplicationController
   {
     "device": {
       "name": "test device",
-      "avatar": "Europe/Moscow",      
+      "avatar": "Europe/Moscow",
     }
   }
 
@@ -127,7 +129,6 @@ class DevicesController < ApplicationController
   }
   EOS
   def show
-    byebug
     show_device.(user: current_user, params: params) do |m|
       m.success do |response|
         render json: { device: ::DeviceRepresenter.new(response[:model]).to_hash(user_options: { with_children: true }) }, status: :ok

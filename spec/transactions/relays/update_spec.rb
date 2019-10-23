@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Transactions::Relays::Update do
@@ -82,7 +84,7 @@ RSpec.describe Transactions::Relays::Update do
             end
 
             context 'no schedule' do
-              let(:task_schedule_attributes) { { schedule: 'none', start: DateTime.now, stop: DateTime.now + 1.day, days: days.merge(mon: { on: 100, off: 200}) } }
+              let(:task_schedule_attributes) { { schedule: 'none', start: DateTime.now, stop: DateTime.now + 1.day, days: days.merge(mon: { on: 100, off: 200 }) } }
               let(:task_attributes) { attributes_for(:task).merge(values_range: false, task_schedule: task_schedule_attributes) }
 
               it { expect(result.success[:model].task.task_schedule.start).to be_nil }
@@ -91,14 +93,14 @@ RSpec.describe Transactions::Relays::Update do
             end
 
             context 'calendar schedule' do
-              let(:task_schedule_attributes) { { schedule: 'calendar', start: DateTime.now, stop: DateTime.now + 1.day, days: days.merge(mon: { on: 100, off: 200}) } }
+              let(:task_schedule_attributes) { { schedule: 'calendar', start: DateTime.now, stop: DateTime.now + 1.day, days: days.merge(mon: { on: 100, off: 200 }) } }
               let(:task_attributes) { attributes_for(:task).merge(values_range: false, task_schedule: task_schedule_attributes) }
 
               it { expect(result.success[:model].task.task_schedule.days).to eq(attributes_for(:task_schedule)[:days].deep_stringify_keys) }
             end
 
             context 'weekly schedule' do
-              let(:task_schedule_attributes) { { schedule: 'weekly', start: DateTime.now, stop: DateTime.now + 1.day, days: days.merge(mon: { on: 100, off: 200}) } }
+              let(:task_schedule_attributes) { { schedule: 'weekly', start: DateTime.now, stop: DateTime.now + 1.day, days: days.merge(mon: { on: 100, off: 200 }) } }
               let(:task_attributes) { attributes_for(:task).merge(values_range: false, task_schedule: task_schedule_attributes) }
 
               it { expect(result.success[:model].task.task_schedule.start).to be_nil }
@@ -151,7 +153,7 @@ RSpec.describe Transactions::Relays::Update do
       end
 
       context 'only min is provided' do
-        let(:task_attributes) { attributes_for(:task).merge(values_range: true, min: 0, max: nil)}
+        let(:task_attributes) { attributes_for(:task).merge(values_range: true, min: 0, max: nil) }
         let(:params) { { id: 1, relay: attributes_for(:relay).merge(task: task_attributes) } }
 
         it { expect(subject.failure[:relay][:task][:min]).to eq(['both min and max are required']) }
@@ -160,7 +162,7 @@ RSpec.describe Transactions::Relays::Update do
       context 'with task_schedule data' do
         context 'wrong schedule' do
           let(:task_schedule_attributes) { attributes_for(:task_schedule).merge(schedule: 'aaa') }
-          let(:task_attributes) { attributes_for(:task).merge(values_range: false, task_schedule: task_schedule_attributes)}
+          let(:task_attributes) { attributes_for(:task).merge(values_range: false, task_schedule: task_schedule_attributes) }
           let(:params) { { id: 1, relay: attributes_for(:relay).merge(task: task_attributes) } }
 
           it { expect(subject.failure[:relay][:task][:task_schedule][:schedule]).to eq(['must be one of: none, calendar, weekly']) }

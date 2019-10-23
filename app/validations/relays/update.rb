@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 module Validations
   module Relays
     class Update < Validator
-
       DAYS = %i[mon tue wed thu fri sat sun].freeze
 
       params do
@@ -38,26 +39,27 @@ module Validations
       end
 
       DAYS.each do |day|
-        rule(relay: { task: { task_schedule: { days: day }}}) do
-          key.failure('on should be before off') unless value.nil? || (value[:on].nil? && value[:off].nil?) ||
-            (value[:on] && value[:off] && value[:off] > value[:on])
+        rule(relay: { task: { task_schedule: { days: day } } }) do
+          key.failure('on should be before off') unless value.nil? ||
+                                                        (value[:on].nil? && value[:off].nil?) ||
+                                                        (value[:on] && value[:off] && value[:off] > value[:on])
         end
       end
 
-      rule(relay: { task: { task_schedule: :start }}) do
+      rule(relay: { task: { task_schedule: :start } }) do
         start = value
         stop = values.data.dig(:relay, :task, :task_schedule, :stop)
 
-        key.failure('start should be before stop') unless (start.nil? && stop.nil?) || 
-          (start && stop && start < stop)
+        key.failure('start should be before stop') unless (start.nil? && stop.nil?) ||
+                                                          (start && stop && start < stop)
       end
 
       rule(relay: { task: :min }) do
         min = value
         max = values.data.dig(:relay, :task, :max)
 
-        key.failure('both min and max are required') unless (min.nil? && max.nil?) || 
-          (min && max)
+        key.failure('both min and max are required') unless (min.nil? && max.nil?) ||
+                                                            (min && max)
       end
 
       rule(relay: :name) do

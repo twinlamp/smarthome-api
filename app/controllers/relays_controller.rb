@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RelaysController < ApplicationController
   include SmarthomeApi::Import[
     update_relay: 'transactions.relays.update',

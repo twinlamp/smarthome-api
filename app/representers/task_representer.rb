@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TaskRepresenter < Representable::Decorator
   include Representable::JSON
   defaults render_nil: true

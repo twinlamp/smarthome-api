@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :task_schedule do
     start { DateTime.now + 1.day }
@@ -10,7 +12,7 @@ FactoryBot.define do
         thu: { on: nil, off: nil },
         fri: { on: nil, off: nil },
         sat: { on: nil, off: nil },
-        sun: { on: nil, off: nil }        
+        sun: { on: nil, off: nil }
       }
     }
 

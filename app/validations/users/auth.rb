@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 module Validations
   module Users
     class Auth < Validator
-
       params do
         required(:email).filled(:string)
         required(:password).filled(:string)
