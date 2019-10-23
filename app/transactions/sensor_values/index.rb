@@ -28,14 +28,17 @@ module Transactions
                              COUNT(*) OVER() as total_cnt
                       FROM sensor_values
                       WHERE
-                        (registered_at between :from and :to) or
-                        (registered_at > :from and :to IS NULL) or
-                        (registered_at < :to and :from IS NULL) or
-                        (:to is NULL and :from IS NULL)
+                        (sensor_id = :sensor_id) and
+                        (
+                          (registered_at between :from and :to) or
+                          (registered_at > :from and :to IS NULL) or
+                          (registered_at < :to and :from IS NULL) or
+                          (:to is NULL and :from IS NULL)
+                        )
                       ORDER BY registered_at
                     ) as data
-              WHERE MOD(rnk,((CASE WHEN total_cnt > 0 THEN total_cnt ELSE 1.0 END)/200)) = 0
-            ), from: input[:params][:from], to: input[:params][:to]
+              WHERE MOD(rnk,(CASE WHEN total_cnt > 0 THEN total_cnt/200 ELSE 1 END)) = 0
+            ), from: input[:params][:from], to: input[:params][:to], sensor_id: input[:model].id
           ]
         )
 

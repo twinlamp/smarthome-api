@@ -14,7 +14,7 @@ module Transactions
       private
 
       def set_user_id(input)
-        input[:params][:user_id] = input[:user].id
+        input[:params][:device][:user_id] = input[:user].id
         Success(input)
       end
 
